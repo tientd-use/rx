@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:test_stream/bloc/search_event.dart';
-
-import 'api.dart';
+import 'package:test_stream/service/user_service.dart';
 
 @immutable
 class SearchBloc {
@@ -18,7 +17,7 @@ class SearchBloc {
     search.close();
   }
 
-  factory SearchBloc({required Api api}) {
+  factory SearchBloc({required SearchService searchService}) {
     final textChanges = BehaviorSubject<String>();
     final result = textChanges
         .distinct()
@@ -27,7 +26,7 @@ class SearchBloc {
       if (searchTerm.isEmpty) {
         return Stream<SearchEvent?>.value(null);
       } else {
-        return Rx.fromCallable(() => api.search(searchTerm))
+        return Rx.fromCallable(() => searchService.searchWords(searchTerm))
             .delay(const Duration(seconds: 1))
             .map((words) => words.isEmpty
                 ? SearchLoadedWithEmptyListEvent()
